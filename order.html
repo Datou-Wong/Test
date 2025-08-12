@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>慢速永遠逃跑</title>
+<style>
+    body{
+        display: flex;
+        margin: 0 auto;
+        justify-content: center;
+    }
+  .option-group {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    width: 350px;
+  
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 30px;
+    margin: 8px 0;
+  }
+  .option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    left: 0;
+    transition: transform 0.3s ease; /* 平滑逃跑 */
+  }
+  .option span {
+    margin-left: 35px;
+  }
+</style>
+</head>
+<body>
+
+<div class="option-group" >
+  <div style="font-weight: bold; font-size: 20px;">豪豪請喝星巴克好嗎？</div>
+
+  <!-- 正常可點 -->
+  <div class="option">
+    <input type="radio" name="drink" value="yes">
+    <span>好，要喝什麼來點</span>
+  </div>
+
+  <!-- 永遠逃跑 -->
+  <div class="option runaway">
+    <input type="radio" name="drink" value="no">
+    <span>才不要</span>
+  </div>
+
+  <div class="option runaway">
+    <input type="radio" name="drink" value="onTheHouse">
+    <span>你出錢我就請課</span>
+  </div>
+
+  <div class="option runaway">
+    <input type="radio" name="drink" value="later">
+    <span>晚一點再說</span>
+  </div>
+
+  <div class="option runaway">
+    <input type="radio" name="drink" value="dependsOnBrand">
+    <span>太貴了選便宜一點</span>
+  </div>
+</div>
+
+<script>
+  const safeDistance = 40; // 與滑鼠保持的最小距離
+  const runawaySpeed = 20; // 每次逃跑的距離(px)
+
+  document.querySelectorAll('.runaway input').forEach(input => {
+    document.addEventListener('mousemove', (e) => {
+      const rect = input.getBoundingClientRect();
+      const inputCenterX = rect.left + rect.width / 2;
+      const inputCenterY = rect.top + rect.height / 2;
+
+      const dx = e.clientX - inputCenterX;
+      const dy = e.clientY - inputCenterY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // 如果滑鼠距離太近，就往反方向移動
+      if (distance < safeDistance) {
+        const angle = Math.atan2(dy, dx);
+        const offsetX = -Math.cos(angle) * runawaySpeed;
+        const offsetY = -Math.sin(angle) * runawaySpeed;
+
+        // 更新位置（保留目前 transform，再加上新的位移）
+        const style = getComputedStyle(input);
+        const matrix = new DOMMatrixReadOnly(style.transform);
+        const currentX = matrix.m41;
+        const currentY = matrix.m42;
+
+        input.style.transform = `translate(${currentX + offsetX}px, ${currentY + offsetY}px)`;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
